@@ -22,6 +22,12 @@ export default function Home() {
     setGuesses(tempArray)
   }
 
+  function handleDeleteGuess(guessIndex) {
+    guesses.splice(guessIndex, 1)
+    setGuesses(Array.from(guesses))
+    performFiltering()
+  }
+
   function handleCharClick(guessIndex, charIndex) {
     // apply requirement
     const guess = guesses[guessIndex]
@@ -36,30 +42,39 @@ export default function Home() {
     tempArray[guessIndex] = guess
     setGuesses(tempArray)
 
-    // filter words based on requirements
+    performFiltering()
+  }
+
+  // filter words based on current requirements
+  function performFiltering() {
     let filtered = Array.from(allWords)
-    guesses.forEach((guess) => {
-      filtered = filterWords(filtered, guess)
-    })
-    setFilteredWords(Array.from(filtered))
+    if (guesses.length > 0) {
+      guesses.forEach((guess) => {
+        filtered = filterWords(filtered, guess)
+      })
+      setFilteredWords(Array.from(filtered))
+    } else {
+      setFilteredWords([])
+    }
   }
 
   function filterWords(words, guess) {
+    const guessedWord = guess.word // e.g. bzlnd --> blond
+    const score = guess.score // e.g. [2, 0, 1, 2, 2]
     words = words.filter((word) => {
-      const guessedWord = guess.word // e.g. bzlnd --> blond
-      const score = guess.score // e.g. [2, 0, 1, 2, 2]
-
       for (let i = 0; i < score.length; i++) {
-        if (score[i] == 2 && guessedWord[i] !== word[i]) {
-          // discard if required char isn't at correct index
+        // discard if required char isn't at correct index
+        if (score[i] == 2 && word[i] !== guessedWord[i]) {
           return false
         }
-        if (score[i] == 1 && (guessedWord[i] == word[i] || !word.includes(guessedWord[i]))) {
-          // discard if required char isn't at other index
+
+        // discard if required char isn't at other index
+        if (score[i] == 1 && (word[i] == guessedWord[i] || !word.includes(guessedWord[i]))) {
           return false
         }
+
+        // discard if char isn't member
         if (score[i] == 0 && word.includes(guessedWord[i])) {
-          // discard if char isn't member
           return false
         }
       }
@@ -76,10 +91,14 @@ export default function Home() {
   }
 
   // render the current state of affairs
-  function CurrentState() {
+  function renderCurrentState() {
     return guesses.map((guess, guessIndex) => {
       const word = guess.word
       const score = guess.score
+      const deleteGuess = () => {
+        handleDeleteGuess(guessIndex)
+      }
+
       return (
         <div className={styles.grid} key={guessIndex}>
           {word.split('').map((char, charIndex) => {
@@ -98,38 +117,39 @@ export default function Home() {
               </button>
             )
           })}
+          <img className={styles.trashcan} src="../trash.png" onClick={deleteGuess} />
         </div>
       )
     })
   }
 
-  function GuessInput() {
+  function renderGuessInput() {
     // fixme: force blank values on each render
     return (
-      <div key={String(Date.now())}>
-        <RICIBs
-          amount={5}
-          autoFocus
-          handleOutputString={handleGuessInput}
-          inputProps={[]}
-          inputRegExp={/^[a-z]$/}
-        />
-        <button onClick={handleSubmit}>enter</button>
+      <div className={styles.guess} key={String(Date.now())}>
+        <form onSubmit={handleSubmit}>
+          <RICIBs
+            amount={5}
+            autoFocus
+            handleOutputString={handleGuessInput}
+            inputProps={[]}
+            inputRegExp={/^[a-z]$/}
+          />
+          <button type="submit" onClick={handleSubmit}>
+            Enter
+          </button>
+        </form>
       </div>
     )
   }
 
   // ouput available words
-  function AvailableWords() {
-    if (filteredWords.length == 0) {
-      return <div className={styles.result}>Zero matches :/</div>
-    }
-    if (filteredWords.length == 1) {
-      return <div className={styles.result}>Only match: {filteredWords[0]}</div>
-    }
+  function renderAvailableWords() {
     return (
       <div className={styles.result}>
-        {filteredWords.length} words match:
+        {filteredWords.length == 0 && <h3>Zero matches :/</h3>}
+        {filteredWords.length == 1 && <h3>One match</h3>}
+        {filteredWords.length > 1 && <h3>{filteredWords.length} words match</h3>}
         <div>{filteredWords.join(', ')}</div>
       </div>
     )
@@ -144,14 +164,14 @@ export default function Home() {
       </Head>
 
       <main className={styles.main}>
-        <h1 className={styles.title}>Wordle Filter</h1>
+        <h1 className={styles.title}>Wordle Solver</h1>
         <div className={styles.description}>
           Enter your attempts, click guessed letters to change requirements
         </div>
 
-        <div>{CurrentState()}</div>
-        <div>{GuessInput()}</div>
-        <div>{AvailableWords()}</div>
+        <div>{renderCurrentState()}</div>
+        <div>{renderGuessInput()}</div>
+        <div>{renderAvailableWords()}</div>
       </main>
 
       <footer className={styles.footer}>
