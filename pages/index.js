@@ -10,7 +10,7 @@ export default function Home() {
   const [guesses, setGuesses] = useState([])
   const [filteredWords, setFilteredWords] = useState([])
 
-  let currentGuess = ''
+  let currentGuess = '' // fixme: make this part of state
 
   function handleGuessInput(guess) {
     currentGuess = guess
@@ -75,6 +75,7 @@ export default function Home() {
     return styles.correct
   }
 
+  // render the current state of affairs
   function CurrentState() {
     return guesses.map((guess, guessIndex) => {
       const word = guess.word
@@ -103,7 +104,7 @@ export default function Home() {
   }
 
   function GuessInput() {
-    // force blank values on each render
+    // fixme: force blank values on each render
     return (
       <div key={String(Date.now())}>
         <RICIBs
@@ -118,8 +119,8 @@ export default function Home() {
     )
   }
 
+  // ouput available words
   function AvailableWords() {
-    console.log('ava?', filteredWords)
     if (filteredWords.length == 0) {
       return <div className={styles.description}>Zero matches :/</div>
     }
@@ -143,7 +144,9 @@ export default function Home() {
 
       <main className={styles.main}>
         <h1 className={styles.title}>Wordle Filter</h1>
-        <div className={styles.description}>...</div>
+        <div className={styles.description}>
+          Enter your attempts, click guessed letters to change requirements
+        </div>
 
         <div>{CurrentState()}</div>
         <div>{GuessInput()}</div>
