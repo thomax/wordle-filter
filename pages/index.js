@@ -2,7 +2,7 @@ import Head from 'next/head'
 import {useState} from 'react'
 import RICIBs from 'react-individual-character-input-boxes'
 import styles from '../styles/Home.module.css'
-import shared from './data'
+import shared from '../data/words'
 
 const allWords = shared.allWords
 
@@ -122,14 +122,15 @@ export default function Home() {
   // ouput available words
   function AvailableWords() {
     if (filteredWords.length == 0) {
-      return <div className={styles.description}>Zero matches :/</div>
+      return <div className={styles.result}>Zero matches :/</div>
     }
     if (filteredWords.length == 1) {
-      return <div className={styles.description}>Only match: {filteredWords[0]}</div>
+      return <div className={styles.result}>Only match: {filteredWords[0]}</div>
     }
     return (
-      <div className={styles.description}>
-        These {filteredWords.length} words match: {filteredWords.join(', ')}
+      <div className={styles.result}>
+        {filteredWords.length} words match:
+        <div>{filteredWords.join(', ')}</div>
       </div>
     )
   }
@@ -154,7 +155,9 @@ export default function Home() {
       </main>
 
       <footer className={styles.footer}>
-        <code className={styles.code}>by thomax</code>
+        <code className={styles.code}>
+          <a href="https://github.com/thomax/wordle-filter">thomax left this on github</a>
+        </code>
       </footer>
     </div>
   )

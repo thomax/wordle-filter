@@ -57,6 +57,12 @@
   font-style: italic;
 }
 
+.result {
+  margin: 2rem 0;
+  line-height: 1;
+  font-size: 1rem;
+}
+
 .code {
   background: #fafafa;
   border-radius: 5px;
