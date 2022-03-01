@@ -165,6 +165,7 @@ export default function Home() {
 
       <main className={styles.main}>
         <h1 className={styles.title}>Wordle Solver</h1>
+        <div>[Sorry, doesn't work well on mobile devices]</div>
         <div className={styles.description}>
           Enter your attempts, click guessed letters to change requirements
         </div>
